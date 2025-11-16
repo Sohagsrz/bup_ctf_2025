@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div>
+    <h1>Test with flagdaw</h1>
+    <button id="button">
+      Click me!
+    </button>
+    <div id="result"></div>
+  </div>
+  <script>
+    button.addEventListener("click", async () => {
+      const flag = await fetch("http://49.213.52.6:6969/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ flagdaw: true }),
+      }).then((r) => r.text());
+
+      document.getElementById("result").innerHTML = flag;
+      console.log(flag);
+    });
+  </script>
+</body>
+</html>
+
