@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Large files and directories
+*.zip
+*.apk
+*.dex
+*.jar
+*.war
+*.ear
+*.ks
+Mal/mal.ks
+
+# Build outputs
+*.class
+*.o
+*.so
+*.dylib
+*.dll
+
+# Extracted/Decompiled files
+**/jadx_output/
+**/apk_extracted/
+**/extracted/
+
+# Virtual environments
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+capture.pcap
+
+# Large binary files
+*.bin
+*.dat
+
