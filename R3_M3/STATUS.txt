@@ -1,0 +1,32 @@
+## Current Status
+
+I've completed extensive reverse engineering work on the R3 M3 challenge:
+
+✅ **Completed:**
+- Downloaded and extracted the binary
+- Implemented all 6 hash functions (orbit_mist, orbit_ember, orbit_tide, orbit_quartz, orbit_haze, orbit_nova)
+- Analyzed main function logic
+- Tested comprehensive flag candidates
+- Attempted brute force on short flags
+
+⚠️ **Current Issue:**
+The flag has not been found yet. Possible reasons:
+1. Hash function implementations may have bugs (especially orbit_tide which uses SIMD)
+2. Flag format might be different than expected
+3. Need to verify implementations against actual binary
+
+**Expected Hash Values:**
+- expected[0]: 0x49ec606db1d2e62d
+- expected[1]: 0x2ab1ab1ec269421e  
+- expected[2]: 0xe49a159a174cbcf8
+- expected[3]: 0x47f34a499b2edd93
+- expected[4]: 0x237a429b80010643
+- FINAL: 0xFCE62D194453D523
+
+**Next Steps:**
+1. Verify hash functions by testing against actual binary (requires Linux environment)
+2. Try symbolic execution with angr
+3. Check if flag is embedded in binary
+4. Review hash function implementations for bugs
+
+All code and analysis is in the R3_M3 directory.

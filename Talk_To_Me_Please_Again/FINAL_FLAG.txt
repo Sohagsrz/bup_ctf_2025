@@ -1,0 +1,14 @@
+Based on verified reverse engineering:
+
+The input that encrypts to bucket_root (verified correct):
+Hex: dad214f15d689aaf4ab7d7b0873d56c91036f95767a48e88664bbdf463
+
+Possible flag formats to try:
+1. CS{dad214f15d689aaf4ab7d7b0873d56c91036f95767a48e88664bbdf463}
+2. dad214f15d689aaf4ab7d7b0873d56c91036f95767a48e88664bbdf463 (as secret code)
+3. CS{2tIU8V1omq9Kt9ewhz1WyRA2+VdnpI6IZku99GM=} (base64 version)
+
+Verification: ✅ The hex string encrypts correctly to bucket_root
+Implementation: ✅ Forward/reverse test passes
+
+

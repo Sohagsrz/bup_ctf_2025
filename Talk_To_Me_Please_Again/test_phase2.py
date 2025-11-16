@@ -1,116 +1,100 @@
 #!/usr/bin/env python3
 """
-Test phase 2 to understand the exact operations
+Test phase 2 forward and reverse
 """
 
-KDATA = [
-    0xa3d94f21, 0x55ccaa01, 0x12345678, 0xdeadbeef,
-    0x0f1e2d3c, 0xcafebabe, 0xfeedface, 0x01020304,
-    0x89abcdef, 0x13579bdf, 0x2468ace0, 0x0badf00d,
-    0x31415926, 0x27182818, 0xb16b00b5, 0x0c0ffee0,
-    0xf00dbaaa, 0xbaadf00d, 0xabcd1234, 0x0defaced,
-    0xc001d00d, 0xfeedf00d, 0xdeadc0de, 0x1337c0de
-]
+from solve_correct import *
 
-length = 5
-key = 0x28c
-r11 = key & 0xFFFF
+# Test phase 2 with output from phase 1
+test = b"A" * 29
+
+# Do phase 1 first
+stack = bytearray(test)
+r12 = KEY & 0xF
+r15 = KEY & 0xFFFF
+for i in range(len(test)):
+    val = (r12 + i) & 0xFFFFFFFFFFFFFFFF
+    kdata_idx = calc_kdata_idx_magic(val)
+    shift = (i * 5) & 0xf
+    kdata_byte = (KDATA[kdata_idx] >> shift) & 0xff
+    if i > 0:
+        stack[i] ^= stack[i-1]
+    stack[i] ^= kdata_byte
+    key_shift = (r15 >> (i & 3)) & 0xff
+    stack[i] = (stack[i] + key_shift) & 0xff
+    stack[i] = ((stack[i] << 3) | (stack[i] >> 5)) & 0xff
+
+phase1_out = bytes(stack)
+print(f"After phase 1: {phase1_out.hex()[:40]}...")
+
+# Phase 2 forward
+stack = bytearray(phase1_out)
+r11 = KEY & 0xFFFF
+r9 = (KEY >> 8) & 0xFF
 r8 = 0
 
-test_input = bytearray([0x41, 0x42, 0x43, 0x44, 0x45])
-stack = bytearray(test_input)
+print(f"\nPhase 2 forward:")
+print(f"  Initial: r11=0x{r11:x}, r9=0x{r9:x}, r8={r8}")
 
-print("Phase 2 forward:")
-print("For each i:")
-print("1. Calculate kdata index from r8")
-print("2. XOR with kdata byte")
-print("3. Add r11 (low byte)")
-print("4. Increment r11 by 0xb")
-print("5. Rotate left by 1")
-print("6. Increment r8 by 7")
-print()
-
-for i in range(length):
-    print(f"i={i}, r8={r8}, r11=0x{r11:04x}:")
-    print(f"  Before: stack[{i}] = 0x{stack[i]:02x}")
-    
-    # Calculate kdata index - need to use the same magic number trick
-    # For now, let's use simplified: (r8 * 3) % 24
-    kdata_idx = ((r8 * 3) % 24)
+for i in range(len(test)):
+    kdata_idx = calc_kdata_idx_magic(r9)
     shift = (r8 * 7) & 0x7
-    kdata_val = KDATA[kdata_idx]
-    kdata_byte = (kdata_val >> shift) & 0xff
-    print(f"  kdata_idx = ({r8} * 3) % 24 = {kdata_idx}, shift={shift}, kdata_byte=0x{kdata_byte:02x}")
-    
-    # Step 1: XOR with kdata
+    kdata_byte = (KDATA[kdata_idx] >> shift) & 0xff
+    before = stack[i]
     stack[i] ^= kdata_byte
-    print(f"  After XOR kdata: 0x{stack[i]:02x}")
-    
-    # Step 2: Add r11
+    after_xor = stack[i]
     stack[i] = (stack[i] + (r11 & 0xff)) & 0xff
-    print(f"  After add r11: 0x{stack[i]:02x}")
-    
-    # Step 3: Increment r11
+    after_add = stack[i]
     r11 = (r11 + 0xb) & 0xFFFF
-    print(f"  r11 now: 0x{r11:04x}")
-    
-    # Step 4: Rotate left by 1
     stack[i] = ((stack[i] << 1) | (stack[i] >> 7)) & 0xff
-    print(f"  After rotate: 0x{stack[i]:02x}")
-    
-    # Step 5: Increment r8
+    after_rol = stack[i]
+    r9 = (r9 + 3) & 0xFF
     r8 += 7
-    print()
+    if i < 3:
+        print(f"  i={i}: 0x{before:02x} -> XOR kdata(0x{kdata_byte:02x}, idx={kdata_idx}) -> 0x{after_xor:02x} -> +0x{r11-0xb:02x} -> 0x{after_add:02x} -> ROL1 -> 0x{after_rol:02x} (r9=0x{r9-3:02x}, r8={r8-7})")
 
-print("Forward result:", [hex(b) for b in stack])
+phase2_out = bytes(stack)
+print(f"\nAfter phase 2: {phase2_out.hex()[:40]}...")
 
-# Now reverse
-print("\n" + "="*60)
-print("Phase 2 reverse:")
-print("For each i from length-1 down to 0:")
-print("1. Rotate right by 1")
-print("2. Subtract r11")
-print("3. XOR with kdata")
-print("4. Decrement r11 by 0xb")
-print("5. Decrement r8 by 7")
-print()
-
-# Calculate final r11 and r8 values
-final_r11 = (key + (length * 0xb)) & 0xFFFF
-final_r8 = (length - 1) * 7
+# Phase 2 reverse
+print(f"\nPhase 2 reverse:")
+final_r11 = (KEY + (len(test) * 0xb)) & 0xFFFF
+final_r9 = ((KEY >> 8) & 0xFF) + (len(test) * 3)
+final_r8 = (len(test) - 1) * 7
 r11 = final_r11
+r9 = final_r9 & 0xFF
 r8 = final_r8
 
-for i in range(length - 1, -1, -1):
-    print(f"i={i}, r8={r8}, r11=0x{r11:04x}:")
-    print(f"  Before: stack[{i}] = 0x{stack[i]:02x}")
-    
-    # Step 1: Rotate right by 1
+print(f"  Initial: r11=0x{r11:x}, r9=0x{r9:x}, r8={r8}")
+
+stack = bytearray(phase2_out)
+for i in range(len(test) - 1, -1, -1):
+    before = stack[i]
     stack[i] = ((stack[i] >> 1) | (stack[i] << 7)) & 0xff
-    print(f"  After rotate: 0x{stack[i]:02x}")
-    
-    # Step 2: Subtract r11
+    after_ror = stack[i]
     stack[i] = (stack[i] - (r11 & 0xff)) & 0xff
-    print(f"  After subtract r11: 0x{stack[i]:02x}")
-    
-    # Step 3: XOR with kdata
-    kdata_idx = ((r8 * 3) % 24)
+    after_sub = stack[i]
+    kdata_idx = calc_kdata_idx_magic(r9)
     shift = (r8 * 7) & 0x7
-    kdata_val = KDATA[kdata_idx]
-    kdata_byte = (kdata_val >> shift) & 0xff
-    print(f"  kdata_idx = ({r8} * 3) % 24 = {kdata_idx}, shift={shift}, kdata_byte=0x{kdata_byte:02x}")
+    kdata_byte = (KDATA[kdata_idx] >> shift) & 0xff
     stack[i] ^= kdata_byte
-    print(f"  After XOR kdata: 0x{stack[i]:02x}")
-    
-    # Step 4: Decrement r11
+    after_xor = stack[i]
     r11 = (r11 - 0xb) & 0xFFFF
-    print(f"  r11 now: 0x{r11:04x}")
-    
-    # Step 5: Decrement r8
+    r9 = (r9 - 3) & 0xFF
     r8 -= 7
-    print()
+    if i >= len(test) - 3:
+        print(f"  i={i}: 0x{before:02x} -> ROR1 -> 0x{after_ror:02x} -> -0x{r11+0xb:02x} -> 0x{after_sub:02x} -> XOR kdata(0x{kdata_byte:02x}, idx={kdata_idx}) -> 0x{after_xor:02x} (r9=0x{r9+3:02x}, r8={r8+7})")
 
-print("Reverse result:", [hex(b) for b in stack])
-print("Original:", [hex(b) for b in test_input])
-print("Match:", stack == test_input)
+phase2_reverse = bytes(stack)
+print(f"\nAfter phase 2 reverse: {phase2_reverse.hex()[:40]}...")
+print(f"Phase 2 match: {phase2_reverse == phase1_out}")
 
+if phase2_reverse != phase1_out:
+    print("\n❌ Phase 2 reverse failed!")
+    print(f"Expected: {phase1_out.hex()[:40]}...")
+    print(f"Got:      {phase2_reverse.hex()[:40]}...")
+    # Find first mismatch
+    for i in range(len(test)):
+        if phase1_out[i] != phase2_reverse[i]:
+            print(f"First mismatch at index {i}: expected 0x{phase1_out[i]:02x}, got 0x{phase2_reverse[i]:02x}")
+            break

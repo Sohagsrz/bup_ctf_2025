@@ -54,3 +54,4 @@ for key_byte in [0x28, 0x8c, 0x28c & 0xFF, (0x28c >> 8) & 0xFF]:
             print(f"  XOR with 0x{key_byte:02x}: Found CS{{ pattern!")
             print(f"    {ascii_view}")
 
+

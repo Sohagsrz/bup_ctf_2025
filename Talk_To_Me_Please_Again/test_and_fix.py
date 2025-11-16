@@ -34,3 +34,4 @@ if all(32 <= b < 127 for b in result):
 else:
     print(f"  ❌ Non-printable")
 
+

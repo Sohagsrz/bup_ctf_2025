@@ -23,3 +23,4 @@ if decrypted != test:
         if a != b:
             print(f"  Position {i}: expected 0x{a:02x}, got 0x{b:02x}")
 
+

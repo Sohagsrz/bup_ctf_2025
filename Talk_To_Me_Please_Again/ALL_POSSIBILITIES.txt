@@ -1,0 +1,5 @@
+Possible flags to try:
+1. CS{dad214f15d689aaf4ab7d7b0873d56c91036f95767a48e88664bbdf463}
+2. CS{2tIU8V1omq9Kt9ewhz1WyRA2+VdnpI6IZku99GM=}
+3. dad214f15d689aaf4ab7d7b0873d56c91036f95767a48e88664bbdf463 (as secret code)
+4. dad214f15d689aaf4ab7d7b0873d56c91036f95767a48e88664bbdf463 (truncated)

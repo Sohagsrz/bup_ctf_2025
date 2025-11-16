@@ -72,3 +72,4 @@ for i in range(5):
     print(f"  r9=0x{r9:02x}, simple={idx_simple}, magic={idx_magic} {match}")
     r9 = (r9 + 3) & 0xFF
 
+

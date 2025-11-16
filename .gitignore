@@ -16,6 +16,11 @@ __pycache__/
 *.ear
 *.ks
 Mal/mal.ks
+Mal/mal_clean.ks
+R3_M3/reMe/reMe.ks
+R3_M3/challenge.zip
+Mal/challenge.zip
+Ultimate_Hacker_App/challenge.zip
 
 # Build outputs
 *.class
@@ -33,6 +38,7 @@ Mal/mal.ks
 env/
 ENV/
 .venv/
+**/venv/
 
 # IDE
 .vscode/
@@ -48,6 +54,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+solve_output.log
 
 # Temporary files
 *.tmp
@@ -57,4 +64,8 @@ capture.pcap
 # Large binary files
 *.bin
 *.dat
+
+# Cookies and sensitive data
+cookies.txt
+*.pcap
 
